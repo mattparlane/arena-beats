@@ -1,0 +1,212 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+  background-color: #121212;
+  color: #ffffff;
+  line-height: 1.6;
+}
+
+.heardle-app {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 15px 0;
+  border-bottom: 1px solid #333;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 5px;
+  color: #1DB954;
+}
+
+header p {
+  font-size: 1rem;
+  color: #b3b3b3;
+}
+
+.game-container {
+  flex: 1;
+}
+
+.player-container {
+  margin-bottom: 30px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #282828;
+}
+
+.player-placeholder {
+  height: 166px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #282828;
+  padding: 20px;
+  text-align: center;
+}
+
+.play-button {
+  background-color: #1DB954;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.3s;
+}
+
+.play-button:hover {
+  background-color: #1ed760;
+}
+
+.input-container {
+  display: flex;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.input-container input {
+  flex: 1;
+  padding: 12px 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #282828;
+  color: white;
+  font-size: 16px;
+}
+
+.input-container input::placeholder {
+  color: #b3b3b3;
+}
+
+.input-container button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #1DB954;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.input-container button:hover {
+  background-color: #1ed760;
+}
+
+.input-container button:disabled {
+  background-color: #535353;
+  cursor: not-allowed;
+}
+
+.skip-button {
+  background-color: #535353 !important;
+}
+
+.skip-button:hover {
+  background-color: #636363 !important;
+}
+
+.guesses-list {
+  margin-bottom: 30px;
+}
+
+.guess-item {
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.guess-item.correct {
+  background-color: #1DB954;
+  color: white;
+}
+
+.guess-item.incorrect {
+  background-color: #282828;
+  color: #b3b3b3;
+}
+
+.result-message {
+  text-align: center;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.result-message h2 {
+  margin-bottom: 10px;
+  font-size: 1.8rem;
+}
+
+.result-message p {
+  margin-bottom: 20px;
+}
+
+.success {
+  background-color: rgba(29, 185, 84, 0.15);
+}
+
+.failure {
+  background-color: rgba(255, 100, 100, 0.15);
+}
+
+.reset-button {
+  background-color: #1DB954;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.reset-button:hover {
+  background-color: #1ed760;
+}
+
+footer {
+  margin-top: 40px;
+  text-align: center;
+  padding: 15px 0;
+  border-top: 1px solid #333;
+  font-size: 0.9rem;
+  color: #b3b3b3;
+}
+
+@media (max-width: 600px) {
+  .heardle-app {
+    padding: 15px;
+  }
+  
+  .input-container {
+    flex-direction: column;
+  }
+  
+  .input-container button {
+    width: 100%;
+  }
+}
