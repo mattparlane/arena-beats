@@ -1,16 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import Select from 'react-select';
 import songsData from './songs.json';
 import './styles.css';
 
 export default function App() {
+  const iframeRef = useRef(null);
+  const [isReady, setIsReady] = useState(false);
   const [currentSong, setCurrentSong] = useState(null);
   const [guesses, setGuesses] = useState([]);
   const [userInput, setUserInput] = useState('');
+  const [selectedOption, setSelectedOption] = useState(null);
   const [gameState, setGameState] = useState('playing'); // playing, won, lost
-  const [showPlayer, setShowPlayer] = useState(false);
   const [skipCount, setSkipCount] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
   const MAX_GUESSES = 6;
   const SKIP_INCREMENTS = [1, 2, 4, 7, 11, 16]; // seconds to reveal after each skip
+  
+  // Create options for react-select from songs data
+  const songOptions = songsData.map(song => ({
+    value: song.name,
+    label: `${song.name} - ${song.artist}`
+  }));
 
   useEffect(() => {
     // Pick a random song when the component mounts
@@ -18,20 +28,49 @@ export default function App() {
     setCurrentSong(songsData[randomIndex]);
   }, []);
 
-  const handleGuess = () => {
-    if (!userInput.trim() || gameState !== 'playing') return;
+  useEffect(() => {
+    if (isReady) return;
 
-    const newGuesses = [...guesses, userInput];
+    // Check if the iframe is ready
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    const widget = SC.Widget(iframe);
+    widget.bind(SC.Widget.Events.READY, () => {
+      setIsReady(true);
+    });
+
+    // Cleanup function to remove the event listener
+    return () => {
+      if (widget) {
+        widget.unbind(SC.Widget.Events.READY);
+      }
+    };
+  });
+
+  // Helper function to remove non-alpha characters
+  const normalizeString = (str) => {
+    return str.toLowerCase().replace(/[^a-z0-9]/gi, '');
+  };
+
+  const handleGuess = () => {
+    if ((!selectedOption && !userInput.trim()) || gameState !== 'playing') return;
+    
+    // Use selected option value if available, otherwise use input text
+    const guessValue = selectedOption ? selectedOption.value : userInput;
+    const newGuesses = [...guesses, guessValue];
     setGuesses(newGuesses);
     setUserInput('');
+    setSelectedOption(null);
 
-    // Check if the guess is correct (case insensitive)
-    if (userInput.toLowerCase() === currentSong.name.toLowerCase()) {
+    // Check if the guess is correct using normalized strings
+    const normalizedGuess = normalizeString(guessValue);
+    const normalizedAnswer = normalizeString(currentSong.name);
+    
+    if (normalizedGuess === normalizedAnswer) {
       setGameState('won');
-      setShowPlayer(true);
     } else if (newGuesses.length >= MAX_GUESSES) {
       setGameState('lost');
-      setShowPlayer(true);
     }
   };
 
@@ -44,7 +83,6 @@ export default function App() {
     // If they've used all skips, they lose
     if (newSkipCount >= MAX_GUESSES) {
       setGameState('lost');
-      setShowPlayer(true);
     }
   };
 
@@ -59,8 +97,8 @@ export default function App() {
     setCurrentSong(songsData[randomIndex]);
     setGuesses([]);
     setUserInput('');
+    setSelectedOption(null);
     setGameState('playing');
-    setShowPlayer(false);
     setSkipCount(0);
   };
 
@@ -72,14 +110,14 @@ export default function App() {
 
   // Calculate how many seconds to reveal based on skip count
   const getRevealTime = () => {
-    if (skipCount === 0) return 1;
-    return SKIP_INCREMENTS[skipCount - 1];
+    // if (skipCount === 0) return 1;
+    return SKIP_INCREMENTS[skipCount];
   };
 
   return (
     <div className="heardle-app">
       <header>
-        <h1>Porirdle</h1>
+        <h1>ArenaBeats</h1>
         <p>Guess the NZ song from the intro</p>
       </header>
 
@@ -88,38 +126,50 @@ export default function App() {
           <>
             <div className="player-container">
               <iframe
+                ref={iframeRef}
                 width="100%"
                 height="166"
                 scrolling="no"
                 frameBorder="no"
                 allow="autoplay"
                 src={getPlayerUrl()}
-                title="SoundCloud Player"
-                style={{
-                  // visibility: 'hidden',
-                  display: 'none',
-                }}
+                style={{ display: 'none' }}
               ></iframe>
 
               <div className="player-placeholder">
-                <p>Listening to first {getRevealTime()} seconds</p>
+                <p>
+                  Listening to first {getRevealTime()} second
+                  {getRevealTime() > 1 ? 's' : ''}
+                </p>
                 <div className="audio-controls">
                   <button
                     onClick={() => {
                       const iframe = document.querySelector('iframe');
                       const widget = SC.Widget(iframe);
-                      widget.bind(SC.Widget.Events.PLAY_PROGRESS, () => {
-                        console.log('Started playing');
-                        setTimeout(() => {
-                          console.log('Pausing');
-                          widget.pause();
-                        }, getRevealTime() * 1000);
+                        widget.seekTo(0);
+                        let hasScheduledPause = false;
+                        widget.bind(SC.Widget.Events.PLAY_PROGRESS, () => {
+                        if (!hasScheduledPause) {
+                          hasScheduledPause = true;
+                          setTimeout(() => {
+                            widget.pause();
+                            setIsPlaying(false);
+                          }, getRevealTime() * 1000);
+                        }
                       });
                       widget.play();
+                      setIsPlaying(true);
                     }}
-                    className="play-button"
+                    className={`play-button ${isPlaying ? 'playing ' : ''}`}
+                    disabled={isPlaying || !isReady}
                   >
-                    Play
+                    {isPlaying && (
+                      <span className="gg-loadbar-sound" />
+                    )}
+                    {!isPlaying && isReady && (
+                      <span className="gg-play-button" />
+                    )}
+                    {!isReady && <span className="gg-spinner-two-alt" />}
                   </button>
                 </div>
               </div>
@@ -127,22 +177,50 @@ export default function App() {
 
             <div className="guess-container">
               {gameState === 'playing' && (
-                <div className="input-container">
-                  <input
-                    type="text"
-                    value={userInput}
-                    onChange={(e) => setUserInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Enter your guess..."
-                    disabled={gameState !== 'playing'}
-                  />
-                  <button onClick={handleGuess} disabled={!userInput.trim()}>
-                    Submit
-                  </button>
-                  <button onClick={handleSkip} className="skip-button">
-                    Skip (+{skipCount < MAX_GUESSES - 1 ? SKIP_INCREMENTS[skipCount] - (skipCount > 0 ? SKIP_INCREMENTS[skipCount - 1] : 0) : 0}s)
-                  </button>
-                </div>
+                <>
+                  <div className="input-container">
+                    <Select
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                      options={songOptions}
+                      value={selectedOption}
+                      onChange={setSelectedOption}
+                      onInputChange={(inputValue) => setUserInput(inputValue)}
+                      inputValue={userInput}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleGuess();
+                          e.preventDefault();
+                        }
+                      }}
+                      placeholder="Enter your guess..."
+                      isDisabled={gameState !== 'playing'}
+                      isClearable
+                      isSearchable
+                    />
+                    <button onClick={handleGuess} disabled={!selectedOption && !userInput.trim()}>
+                      Guess
+                    </button>
+                    <button
+                      onClick={handleSkip}
+                      className="skip-button"
+                      disabled={skipCount >= MAX_GUESSES - 1}
+                    >
+                      {skipCount < MAX_GUESSES - 1
+                        ? `Skip ${SKIP_INCREMENTS[skipCount]}s`
+                        : (
+                          <span className="gg-close" />
+                        )
+                      }
+                    </button>
+                  </div>
+                  <div className="skip-progress">
+                    <div 
+                      className="skip-progress-bar" 
+                      style={{ width: `${skipCount > 0 ? (SKIP_INCREMENTS[skipCount - 1] / SKIP_INCREMENTS[MAX_GUESSES - 2]) * 100 : 0}%` }}
+                    ></div>
+                  </div>
+                </>
               )}
 
               <div className="guesses-list">
@@ -150,7 +228,7 @@ export default function App() {
                   <div
                     key={index}
                     className={`guess-item ${
-                      guess.toLowerCase() === currentSong?.name.toLowerCase() ? 'correct' : 'incorrect'
+                      normalizeString(guess) === normalizeString(currentSong?.name) ? 'correct' : 'incorrect'
                     }`}
                   >
                     {guess}

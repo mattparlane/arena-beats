@@ -1,3 +1,7 @@
+:root {
+  --ggs: 1.5;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,7 +10,7 @@
 }
 
 body {
-  background-color: #121212;
+  background-color: #fff;
   color: #ffffff;
   line-height: 1.6;
 }
@@ -30,7 +34,7 @@ header {
 header h1 {
   font-size: 2.5rem;
   margin-bottom: 5px;
-  color: #1DB954;
+  color: #4ab9d4;
 }
 
 header p {
@@ -46,7 +50,7 @@ header p {
   margin-bottom: 30px;
   border-radius: 8px;
   overflow: hidden;
-  background-color: #282828;
+  background-color: #4ab9d4;
 }
 
 .player-placeholder {
@@ -55,13 +59,13 @@ header p {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #282828;
+  background-color: #4ab9d4;
   padding: 20px;
   text-align: center;
 }
 
 .play-button {
-  background-color: #1DB954;
+  background-color: #535353;
   color: white;
   border: none;
   border-radius: 50px;
@@ -71,10 +75,16 @@ header p {
   cursor: pointer;
   margin-top: 15px;
   transition: background-color 0.3s;
+  width: 82px;
+  height: 46px;
 }
 
-.play-button:hover {
-  background-color: #1ed760;
+.play-button > * {
+  margin: 0 auto;
+}
+
+button:hover, .input-container button:hover {
+  background-color: #5e5797;
 }
 
 .input-container {
@@ -88,7 +98,7 @@ header p {
   padding: 12px 15px;
   border: none;
   border-radius: 4px;
-  background-color: #282828;
+  background-color: #535353;
   color: white;
   font-size: 16px;
 }
@@ -97,19 +107,79 @@ header p {
   color: #b3b3b3;
 }
 
+.react-select-container {
+  flex: 1;
+}
+
+.react-select__control {
+  background-color: #535353 !important;
+  border: none !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  color: white !important;
+}
+
+.react-select__placeholder {
+  color: #b3b3b3 !important;
+}
+
+.react-select__input {
+  color: white !important;
+}
+
+.react-select__single-value {
+  color: white !important;
+}
+
+.react-select__menu {
+  background-color: #535353 !important;
+  border-radius: 4px !important;
+  z-index: 10;
+}
+
+.react-select__option {
+  background-color: #535353 !important;
+  color: white !important;
+  cursor: pointer !important;
+}
+
+.react-select__option--is-focused {
+  background-color: #333 !important;
+}
+
+.react-select__option--is-selected {
+  background-color: #5e5797 !important;
+}
+
+.react-select__indicator-separator {
+  background-color: #535353 !important;
+}
+
+.react-select__dropdown-indicator {
+  color: #b3b3b3 !important;
+}
+
+.react-select__dropdown-indicator:hover {
+  color: white !important;
+}
+
+.react-select__clear-indicator {
+  color: #b3b3b3 !important;
+}
+
+.react-select__clear-indicator:hover {
+  color: white !important;
+}
+
 .input-container button {
-  padding: 12px 20px;
+  padding: 10px 20px;
   border: none;
   border-radius: 4px;
-  background-color: #1DB954;
+  background-color: #535353;
   color: white;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s;
-}
-
-.input-container button:hover {
-  background-color: #1ed760;
 }
 
 .input-container button:disabled {
@@ -117,12 +187,20 @@ header p {
   cursor: not-allowed;
 }
 
-.skip-button {
-  background-color: #535353 !important;
+.skip-progress {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+  background-color: #535353;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
-.skip-button:hover {
-  background-color: #636363 !important;
+.skip-progress-bar {
+  height: 100%;
+  background-color: #4ab9d4;
+  transition: width 0.3s ease;
 }
 
 .guesses-list {
@@ -139,12 +217,12 @@ header p {
 }
 
 .guess-item.correct {
-  background-color: #1DB954;
+  background-color: #5e5797;
   color: white;
 }
 
 .guess-item.incorrect {
-  background-color: #282828;
+  background-color: #535353;
   color: #b3b3b3;
 }
 
@@ -165,15 +243,15 @@ header p {
 }
 
 .success {
-  background-color: rgba(29, 185, 84, 0.15);
+  background-color: #4ab9d4;
 }
 
 .failure {
-  background-color: rgba(255, 100, 100, 0.15);
+  background-color: #ee7777;
 }
 
 .reset-button {
-  background-color: #1DB954;
+  background-color: #535353;
   color: white;
   border: none;
   border-radius: 50px;
@@ -182,10 +260,6 @@ header p {
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s;
-}
-
-.reset-button:hover {
-  background-color: #1ed760;
 }
 
 footer {
@@ -206,7 +280,152 @@ footer {
     flex-direction: column;
   }
   
+  .react-select-container {
+    width: 100%;
+  }
+  
   .input-container button {
     width: 100%;
   }
+}
+
+@keyframes gg-bar {
+  10% {
+    box-shadow: inset 0 -4px 0;
+  }
+
+  30% {
+    box-shadow: inset 0 -10px 0;
+  }
+
+  60% {
+    box-shadow: inset 0 -6px 0;
+  }
+
+  80% {
+    box-shadow: inset 0 -8px 0;
+  }
+
+  to {
+    box-shadow: inset 0 -2px 0;
+  }
+}
+
+.gg-loadbar-sound,
+.gg-loadbar-sound::after,
+.gg-loadbar-sound::before {
+  display: block;
+  box-sizing: border-box;
+  width: 2px;
+  height: 12px;
+  box-shadow: inset 0 -12px 0;
+  animation: gg-bar 1.3s ease infinite alternate;
+}
+
+.gg-loadbar-sound {
+  position: relative;
+  transform: scale(var(--ggs, 1));
+}
+
+.gg-loadbar-sound::after,
+.gg-loadbar-sound::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+}
+
+.gg-loadbar-sound::before {
+  left: -4px;
+  animation-delay: -2.4s;
+}
+
+.gg-loadbar-sound::after {
+  right: -4px;
+  animation-delay: -3.7s;
+}
+
+.gg-play-button {
+  box-sizing: border-box;
+  position: relative;
+  display: block;
+  transform: scale(var(--ggs, 1));
+  width: 22px;
+  height: 22px;
+}
+
+.gg-play-button::before {
+  content: "";
+  display: block;
+  box-sizing: border-box;
+  position: absolute;
+  width: 0;
+  height: 10px;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 6px solid;
+  top: 6px;
+  left: 9px;
+}
+
+@keyframes spinner-two-alt {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.gg-spinner-two-alt,
+.gg-spinner-two-alt::before {
+  box-sizing: border-box;
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.gg-spinner-two-alt {
+  transform: scale(1);
+  position: relative;
+}
+
+.gg-spinner-two-alt::before {
+  content: "";
+  position: absolute;
+  border-radius: 100px;
+  animation: spinner-two-alt 1s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+  border: 3px solid transparent;
+  border-bottom-color: currentColor;
+  border-top-color: currentColor;
+}
+
+.gg-close {
+  box-sizing: border-box;
+  position: relative;
+  display: block;
+  transform: scale(1);
+  width: 22px;
+  height: 22px;
+  border: 2px solid transparent;
+  border-radius: 40px;
+}
+
+.gg-close::after,
+.gg-close::before {
+  content: "";
+  display: block;
+  box-sizing: border-box;
+  position: absolute;
+  width: 16px;
+  height: 2px;
+  background: currentColor;
+  transform: rotate(45deg);
+  border-radius: 5px;
+  top: 8px;
+  left: 1px;
+}
+
+.gg-close::after {
+  transform: rotate(-45deg);
 }
