@@ -213,6 +213,7 @@ button:hover, .input-container button:hover {
   border-radius: 4px;
   font-weight: bold;
   display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -222,8 +223,8 @@ button:hover, .input-container button:hover {
 }
 
 .guess-item.incorrect {
-  background-color: #535353;
-  color: #b3b3b3;
+  background-color: #cc5353;
+  color: #fff;
 }
 
 .result-message {

@@ -86,6 +86,10 @@ export default function App() {
     }
   };
 
+  const giveUp = () => {
+    setGameState('lost');
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleGuess();
@@ -213,6 +217,11 @@ export default function App() {
                         )
                       }
                     </button>
+                    <button
+                      onClick={giveUp}
+                    >
+                      Give Up
+                    </button>
                   </div>
                   <div className="skip-progress">
                     <div 
@@ -224,14 +233,19 @@ export default function App() {
               )}
 
               <div className="guesses-list">
-                {guesses.map((guess, index) => (
+                {guesses.reverse().map((guess, index) => (
                   <div
                     key={index}
                     className={`guess-item ${
                       normalizeString(guess) === normalizeString(currentSong?.name) ? 'correct' : 'incorrect'
                     }`}
                   >
-                    {guess}
+                    <div>
+                      {guess}
+                    </div>
+                    <div>
+                      &times;
+                    </div>
                   </div>
                 ))}
               </div>
