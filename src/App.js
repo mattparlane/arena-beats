@@ -13,6 +13,7 @@ export default function App() {
   const [gameState, setGameState] = useState('playing'); // playing, won, lost
   const [skipCount, setSkipCount] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playedSongs, setPlayedSongs] = useState([]);
   const MAX_GUESSES = 6;
   const SKIP_INCREMENTS = [1, 2, 4, 7, 11, 16]; // seconds to reveal after each skip
   
@@ -22,10 +23,34 @@ export default function App() {
     label: `${song.name} - ${song.artist}`
   }));
 
+  // Load played songs from localStorage on component mount
   useEffect(() => {
-    // Pick a random song when the component mounts
-    const randomIndex = Math.floor(Math.random() * songsData.length);
-    setCurrentSong(songsData[randomIndex]);
+    const storedPlayedSongs = localStorage.getItem('playedSongs');
+    if (storedPlayedSongs) {
+      setPlayedSongs(JSON.parse(storedPlayedSongs));
+    }
+  }, []);
+
+  // Pick a random unplayed song
+  const getRandomUnplayedSong = () => {
+    const unplayedSongs = songsData.filter(song => 
+      !playedSongs.includes(song.id)
+    );
+    
+    // If all songs have been played, reset the played songs list
+    if (unplayedSongs.length === 0) {
+      setPlayedSongs([]);
+      return songsData[Math.floor(Math.random() * songsData.length)];
+    }
+    
+    const randomIndex = Math.floor(Math.random() * unplayedSongs.length);
+    return unplayedSongs[randomIndex];
+  };
+
+  useEffect(() => {
+    // Pick a random unplayed song when the component mounts
+    const songToPlay = getRandomUnplayedSong();
+    setCurrentSong(songToPlay);
   }, []);
 
   useEffect(() => {
@@ -97,8 +122,17 @@ export default function App() {
   };
 
   const resetGame = () => {
-    const randomIndex = Math.floor(Math.random() * songsData.length);
-    setCurrentSong(songsData[randomIndex]);
+    // Add current song to played songs if it exists
+    if (currentSong) {
+      const newPlayedSongs = [...playedSongs, currentSong.id];
+      setPlayedSongs(newPlayedSongs);
+      // Save to localStorage
+      localStorage.setItem('playedSongs', JSON.stringify(newPlayedSongs));
+    }
+    
+    // Get a new unplayed song
+    const newSong = getRandomUnplayedSong();
+    setCurrentSong(newSong);
     setGuesses([]);
     setUserInput('');
     setSelectedOption(null);
